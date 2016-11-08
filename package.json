@@ -22,8 +22,10 @@
   "homepage": "https://github.com/xmxjq/google-hosts-checker-client#readme",
   "dependencies": {
     "bluebird": "^3.4.6",
+    "cidr-range": "^1.0.6",
     "co": "^4.6.0",
     "ip": "^1.1.4",
+    "later": "^1.2.0",
     "lodash": "^4.16.6",
     "mkdirp-bluebird": "^1.0.1",
     "mz": "^2.5.0",
