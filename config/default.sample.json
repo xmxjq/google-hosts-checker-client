@@ -1,0 +1,11 @@
+{
+    "serverConfig": {
+        "serverBaseUrl": "http://xxxx:8160"
+    },
+    "clientConfig": {
+        "clientId": "default-test-id-01",
+        "outputCron": "every 1 minutes",
+        "submitCron": "every 30 seconds",
+        "scanConcurrency": 50
+    }
+}
