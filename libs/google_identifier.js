@@ -105,7 +105,7 @@ class GoogleIdentifier {
     writeAvailableIpsToFile(filePath) {
         var self = this;
         return co(function *() {
-            let writeResult = yield fs.writeFile(filePath, JSON.stringify(self.availableIps));
+            let writeResult = yield fs.writeFile(filePath, JSON.stringify(self.availableIps), 'utf8');
         });
     }
 }
