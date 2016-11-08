@@ -6,7 +6,7 @@ let path = require('path');
 let yargs = require('yargs');
 let util = require('util');
 let later = require('later');
-var config = require('config');
+let config = require('config');
 
 let clientId = config.get("clientConfig.clientId");
 

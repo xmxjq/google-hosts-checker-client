@@ -9,6 +9,9 @@ let request = require('request');
 let rp = require('request-promise');
 let ip = require('ip');
 let cidrRange = require('cidr-range');
+let config = require('config');
+
+let scanConcurrency = config.get("clientConfig.scanConcurrency");
 
 let argv = yargs.argv;
 
@@ -38,18 +41,26 @@ class GoogleIdentifier {
                 }
                 catch (err) {
                     allIps = [ipRange];
-                }
-                for (let singleIp of allIps) {
-                    let checkResult = yield self.checkGoogleIpAvailability(singleIp);
-                    if (checkResult) {
-                        self.availableIps[singleIp] = true;
+                }                
+                yield Promise.map(
+                    allIps,
+                    function (singleIp, key, length) {
+                        return co(function *() {
+                            let checkResult = yield self.checkGoogleIpAvailability(singleIp);
+                            if (checkResult) {
+                                self.availableIps[singleIp] = true;
+                            }
+                            else {
+                                if (_.has(self.availableIps, singleIp)) {
+                                    delete self.availableIps[singleIp];
+                                }
+                            } 
+                        });
+                    },
+                    {
+                        concurrency: scanConcurrency
                     }
-                    else {
-                        if (_.has(self.availableIps, singleIp)) {
-                            delete self.availableIps[singleIp];
-                        }
-                    }
-                }
+                );
             }
         });
     }
