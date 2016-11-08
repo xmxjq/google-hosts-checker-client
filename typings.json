@@ -1,0 +1,14 @@
+{
+  "globalDependencies": {
+    "bluebird": "registry:dt/bluebird#3.0.0+20160928162057",
+    "ip": "registry:dt/ip#0.0.0+20160929195624",
+    "lodash": "registry:dt/lodash#4.14.0+20161028154038",
+    "mz": "registry:dt/mz#0.0.0+20160811111312",
+    "request": "registry:dt/request#0.0.0+20160726020908",
+    "request-promise": "registry:dt/request-promise#4.1.0+20161013074249",
+    "yargs": "registry:dt/yargs#0.0.0+20161006150200"
+  },
+  "dependencies": {
+    "co": "registry:npm/co#4.6.0+20160905045231"
+  }
+}
