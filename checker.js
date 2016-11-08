@@ -43,7 +43,11 @@ sched.submitTimer = later.setInterval(function () {
             "ip_array": availableIpArray
         }
     };
-    rp(options);
+    try {
+        rp(options);
+    }
+    catch (err) {
+    }
 }, submitSched);
 
 co(function *() {
