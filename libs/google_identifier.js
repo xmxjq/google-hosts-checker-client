@@ -19,6 +19,7 @@ class GoogleIdentifier {
     constructor() {
         this.availableIps = {};
         this.ipRanges = [];
+        this.checkFlag = false;
     }
 
     loadIpRanges(filePath) {
@@ -31,38 +32,42 @@ class GoogleIdentifier {
     }
 
     checkAllIpRanges() {
-        let self = this;
-        return co(function *() {
-            for (let ipRange of self.ipRanges) {
-                console.log(ipRange);
-                let allIps = [];
-                try {
-                    allIps = cidrRange(ipRange);
-                }
-                catch (err) {
-                    allIps = [ipRange];
-                }                
-                yield Promise.map(
-                    allIps,
-                    function (singleIp, key, length) {
-                        return co(function *() {
-                            let checkResult = yield self.checkGoogleIpAvailability(singleIp);
-                            if (checkResult) {
-                                self.availableIps[singleIp] = true;
-                            }
-                            else {
-                                if (_.has(self.availableIps, singleIp)) {
-                                    delete self.availableIps[singleIp];
-                                }
-                            } 
-                        });
-                    },
-                    {
-                        concurrency: scanConcurrency
+        if (!this.checkFlag) {
+            this.checkFlag = true;
+            let self = this;
+            return co(function *() {
+                for (let ipRange of self.ipRanges) {
+                    console.log(ipRange);
+                    let allIps = [];
+                    try {
+                        allIps = cidrRange(ipRange);
                     }
-                );
-            }
-        });
+                    catch (err) {
+                        allIps = [ipRange];
+                    }                
+                    yield Promise.map(
+                        allIps,
+                        function (singleIp, key, length) {
+                            return co(function *() {
+                                let checkResult = yield self.checkGoogleIpAvailability(singleIp);
+                                if (checkResult) {
+                                    self.availableIps[singleIp] = true;
+                                }
+                                else {
+                                    if (_.has(self.availableIps, singleIp)) {
+                                        delete self.availableIps[singleIp];
+                                    }
+                                } 
+                            });
+                        },
+                        {
+                            concurrency: scanConcurrency
+                        }
+                    );
+                }
+                self.checkFlag = false;
+            });
+        }
     }
 
     checkGoogleIpAvailability(ip) {
@@ -80,7 +85,7 @@ class GoogleIdentifier {
                 timeout: 5000
             };
 
-            yield rp(options)
+            return yield rp(options)
             .then(function (htmlResponse) {
                 if (htmlResponse.indexOf("Google Search") >= 0) {
                     console.log(util.format("%s Google Search Found", ip));
@@ -116,7 +121,7 @@ class GoogleIdentifier {
     writeAvailableIpsToFile(filePath) {
         var self = this;
         return co(function *() {
-            let writeResult = yield fs.writeFile(filePath, JSON.stringify(self.availableIps), 'utf8');
+            let writeResult = yield fs.writeFile(filePath, JSON.stringify(_.keys(self.availableIps)), 'utf8');
         });
     }
 }
